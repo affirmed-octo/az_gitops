@@ -1,0 +1,125 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: fed-upf
+  namespace: fed-upf
+spec:
+  releaseName: fed-upf
+  chart:
+    git: https://github.com/rramankutty0/nf_helm_charts.git
+    path: charts/fed-upf
+    ref: master
+  values:
+    global:
+      Release:
+        Namespace: fed-upf
+      dbNoSqlRam:
+        mongo:
+          remoteHost: 192.168.12.70
+      envVars:
+        fedUniqueName: upf-core
+        serviceRegistryNamespace: fed-service-reg
+      fileserver:
+        nfs:
+          remoteHost: 172.16.12.2
+          remotePort: "85"
+      grafana:
+        enabled: true
+        url: http://192.168.12.70:3000
+      logging:
+        elastic:
+          IP: 192.168.12.70
+          Port: 9200
+        enabled: true
+      mesh:
+        istio:
+          ingressGw: ingress-gateway
+          ingressGwHttpNodePort: 31480
+          ingressGwHttpsNodePort: 31490
+          ingressGwIP: 192.168.12.92
+          mtlsEnabled: false
+      registry:
+        docker:
+          repoPath: vladacr.azurecr.io
+      registry_docker_path: vladacr.azurecr.io
+    pod-cfgmgr:
+      enabled: true
+      rbacEnabled: true
+      security:
+        enable_local_passwd_auth: "1"
+        enable_root: "1"
+        local_admin_users:
+        - passwd: default
+          pubkey: ""
+          user: admin
+        local_liadmin_users:
+        - passwd: default
+          pubkey: ""
+          user: liadmin
+        local_lioper_users:
+        - passwd: default
+          pubkey: ""
+          user: lioper
+        local_oper_users:
+        - passwd: default
+          pubkey: ""
+          user: oper
+        local_readonly_users:
+        - passwd: default
+          pubkey: ""
+          user: guest
+      service:
+        loadBalancerIP: 192.168.12.93
+    pod-istio_gw:
+      egressGateway:
+        enabled: true
+      enabled: true
+      istioNspace: fed-istio
+      paasSelector:
+        jaegerHostName: 192.168.12.70
+    pod-istio_gw_li:
+      enabled: false
+    pod-li_x1:
+      enabled: false
+    pod-pfcp_u:
+      deployment:
+        externalSvcNodePortNum: 31905
+        masterNodeIpAddress: kubernetes.default.svc.cluster.local
+        mockServerMode: "false"
+        replicas: 1
+        valgrindRunMode: "false"
+      enabled: true
+      service:
+        externalFqdn: upf.affirmed.com
+        loadBalancerIP: 192.168.12.94
+      upgrade:
+        stableInfraImage: ""
+        stableVersion: ""
+        stableWorkerImage: ""
+    pod-ppe:
+      deployment:
+        masterNodeIpAddress: 172.16.12.2
+      enabled: true
+      externalSvc:
+        masterNodeIpAddress: 172.16.12.2
+      netAttachDefs:
+        annotation: sriov-net1, sriov-net2
+        enabled: false
+      ppeFirstWorker: "1"
+      ppeIoScaling: separated-cores
+      ppeNumWorkers: "8"
+      resources:
+        hugepagesType: 2Mi
+        ppeCpuLimits: 10
+        ppeCpuRequests: 10
+        ppeHugepagesSize: 4Gi
+        ppeMemory: 4Gi
+      sriov:
+      - labels: sr1
+        nbIfc: "1"
+      - labels: sr2
+        nbIfc: "1"
+      vlanStripping: false
+    pod-upf_monitor:
+      deployment:
+        masterNodeIpAddress: 172.16.12.2
