@@ -8,7 +8,7 @@ spec:
   chart:
     git: https://github.com/affirmed-octo/nf_helm_charts.git
     path: UC-1.4.2-405/charts/fed-rbac
-    ref: main
+    ref: master
     secretRef:
       name: fed-rbac-secret
       namespace: fed-rbac
