@@ -1,0 +1,19 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: fed-rbac
+  namespace: fed-rbac
+spec:
+  releaseName: fed-rbac
+  chart:
+    git: https://github.com/affirmed-octo/nf_helm_charts.git
+    path: UC-1.4.2-405/charts/fed-rbac
+    ref: main
+  values:
+    global:
+      Release:
+        Namespace: fed-rbac
+      registry:
+        docker:
+          repoPath: robinio.azurecr.io
+      registry_docker_path: robinio.azurecr.io
