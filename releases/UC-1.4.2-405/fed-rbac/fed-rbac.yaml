@@ -11,7 +11,7 @@ spec:
     ref: main
     secretRef:
       name: fed-rbac-secret
-      namespace: az-gitops
+      namespace: fed-rbac
   values:
     global:
       Release:
